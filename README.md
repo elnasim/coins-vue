@@ -1,4 +1,5 @@
-# crypto.local
+# coins
+# https://elnasim.github.io/vue/coins
 
 ## Project setup
 ```
