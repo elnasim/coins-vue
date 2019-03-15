@@ -4,17 +4,23 @@
     <div class="container">
       <h1>Coins prices</h1>
 
-      <div class="coins-wrapper">
+      <div class="loading" v-if="loading">Loading...</div>
+
+      <div class="coins-wrapper" v-else>
+        <input type="text" class="coins-search" placeholder="Поиск по названию..."
+               v-model="searchData"
+               @input="_filter"
+        >
         <div class="coins">
           <div class="coins__table-title">
             <div>#</div>
-            <div>Name</div>
-            <div>Current Price</div>
-            <div>Min Price 24h</div>
-            <div>Max Price 24h</div>
-            <div>Last Update</div>
+            <div @click="_sort('name')">Name</div>
+            <div @click="_sort('current_price')">Current Price</div>
+            <div @click="_sort('low_24h')">Min Price 24h</div>
+            <div @click="_sort('high_24h')">Max Price 24h</div>
+            <div @click="_sort('last_updated')">Last Update</div>
           </div>
-          <Coin v-for="item in _getDATA" :key="item.id"
+          <Coin v-for="item in filteredData" :key="item.id"
                 :name="item.name"
                 :currentPrice="item.current_price"
                 :low24h="item.low_24h"
@@ -33,22 +39,34 @@
 <script>
 
   import Coin from './components/Coin'
+  import { mapActions, mapState, mapGetters } from 'vuex'
 
   export default {
     name: 'app',
     components: { Coin },
+    data () {
+      return {
+        searchData: '',
+      }
+    },
     methods: {
-      _loadData () {
-        this.$store.dispatch('loadData')
+      ...mapActions(['loadData']),
+
+      ...mapGetters(['search']),
+
+      _sort (column) {
+        this.$store.dispatch('sort', column)
+      },
+
+      _filter () {
+        this.$store.dispatch('filter', this.searchData)
       },
     },
     computed: {
-      _getDATA () {
-        return this.$store.state.coinData
-      },
+      ...mapState(['loading', 'filteredData']),
     },
     created () {
-      this._loadData()
+      this.loadData()
     },
   }
 </script>
@@ -74,11 +92,28 @@
   .coins__table-title {
     display: grid;
     grid-template-columns: 1fr 2fr 2fr 2fr 2fr 2fr;
-    padding: 0 10px;
-
     > div {
       padding: 0 5px;
+      cursor: pointer;
+      &:hover {
+        background-color: rgba(#000, .1);
+      }
     }
+  }
+
+  .loading {
+    text-align: center;
+    font-weight: bold;
+    font-size: 30px;
+  }
+
+  .coins-search {
+    margin-bottom: 30px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 2px;
+    border: 1px solid rgba(#000, .5);
+    font-size: 20px;
   }
 
 

@@ -54,8 +54,8 @@
   }
 
   .b-coin__image {
-    height: 100%;
-    width: auto;
+    width: 30px;
+    height: auto;
   }
 
   .b-coin-sell {
